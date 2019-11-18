@@ -33,8 +33,10 @@ function writeFile(startId, groups, groupLen) {
 		for (var c = 0; c < groups; c++) {
 			const C = c;
 			getText(startId, groupLen, groupLen * c).then(t => {
-				if (a[C] = t, ++count == groups)
+				if (a[C] = t, ++count == groups) {
+					console.log(startId);
 					res(fs.writeFileSync(makePath(startId), a.join('')));
+				}
 			});
 		}
 	});
