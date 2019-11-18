@@ -41,7 +41,8 @@ function writeFile(startId, groups, groupLen) {
 }
 
 async function run(top) {
-	for (var c = top; c >= 0; c -= 1000)
+	//for (var c = top; c >= 0; c -= 1000)
+	for (var c = 0; c <= top; c += 1000)
 		await writeFile(c, 100, 10);
 }
 
