@@ -24,7 +24,7 @@ async function getText(startId, len, offset = 0, numWidth = 3) {
 }
 
 function makePath(startId) {
-	return path.join('characters', padZero(startId, 9) + '.xml');
+	return path.join('characters', padZero(startId, 9) + '.txt');
 }
 
 function writeFile(startId, groups, groupLen) {
@@ -40,10 +40,22 @@ function writeFile(startId, groups, groupLen) {
 	});
 }
 
-async function run(top) {
-	//for (var c = top; c >= 0; c -= 1000)
-	for (var c = 0; c <= top; c += 1000)
-		await writeFile(c, 100, 10);
+async function run(start = 0, end = 0, groups = 100, groupLen = 10) {
+	var len = end - start;
+	var sign = Math.sign(len);
+	var delta = groups * groupLen;
+	switch (sign) {
+		case 0:
+			throw "Arguments 'start' and 'end' can't match.";
+		case 1:
+			for (var c = start; c <= end; c += delta)
+				await writeFile(c, groups, groupLen);
+			break;
+		case -1:
+			for (var c = start; c >= end; c -= delta)
+				await writeFile(c, groups, groupLen);
+			break;
+	}
 }
 
-run(328493000);
+run(Number.parseInt(fs.readdirSync('characters')[0].substring(0, 9)) - 1000);
