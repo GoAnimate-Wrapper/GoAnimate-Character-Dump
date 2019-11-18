@@ -17,7 +17,7 @@ async function getText(startId, len, offset = 0, numWidth = 3) {
 	for (var c = offset, C = startId + offset, text = ''; c < len + offset; ++c, C++) {
 		try {
 			text += padZero(c, numWidth) + await get(C) + '\n';
-			//console.log(C);
+			console.log(C);
 		} catch (x) { }
 	}
 	return text;
@@ -34,7 +34,7 @@ function writeFile(startId, groups, groupLen) {
 			const C = c;
 			getText(startId, groupLen, groupLen * c).then(t => {
 				if (a[C] = t, ++count == groups) {
-					console.log(startId);
+					console.log('Writing to file.');
 					res(fs.writeFileSync(makePath(startId), a.join('')));
 				}
 			});
