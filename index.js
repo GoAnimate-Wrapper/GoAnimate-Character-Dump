@@ -6,7 +6,7 @@ const xml = require('xml2js');
 function get(c) {
 	return new Promise((res, rej) =>
 		request.post('https://ga.vyond.com/goapi/getCcCharCompositionXml/', { formData: { assetId: c } },
-			(e, r, b) => b[0] == '0' ? res(b.split('\n')[1]) : rej(b.substring(1))));
+			(e, r, b) => !b ? get(c).then(res).catch(rej) : b[0] == '0' ? res(b.split('\n')[1]) : rej(b.substring(1))));
 }
 
 function padZero(n, l) {
