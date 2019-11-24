@@ -6,7 +6,7 @@
   },
   "main": "index.js",
   "dependencies": {
-    "request": "^2.88.0",
-    "xml2js": "*"
+    "dotenv": "^8.2.0",
+    "request": "^2.88.0"
   }
 }
