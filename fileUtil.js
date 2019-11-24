@@ -1,8 +1,13 @@
+const path = require('path');
+
 module.exports = {
-	makePath: function (startId) {
-		return path.join('characters', padZero(startId, process.env.LEADING_DIGITS) + '.txt');
+	makePath(startId) {
+		return path.join('characters', this.padZero(startId) + '.txt');
 	},
-	padZero(n, l) {
+	padZero(n, l = process.env.FILE_NUM_WIDTH) {
 		return ('' + n).padStart(l, '0');
+	},
+	fillTemplate(temp, info) {
+		return temp.replace(/%s/g, info);
 	},
 }

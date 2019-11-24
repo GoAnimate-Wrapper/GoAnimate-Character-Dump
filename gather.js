@@ -1,9 +1,8 @@
 const threads = process.env.GATHER_THREADS;
-const numWidth = process.env.XML_NUM_WIDTH;
+const xNumWidth = process.env.XML_NUM_WIDTH;
 const fw = process.env.FILE_WIDTH;
 
 const fs = require('fs');
-const path = require('path');
 const request = require('request');
 const fUtil = require('./fileUtil');
 
@@ -20,7 +19,7 @@ function getData(c) {
 async function getGranule(startId, len, offset = 0) {
 	for (var c = offset, C = startId + offset, text = ''; c < len + offset; ++c, C++) {
 		try {
-			text += fUtil.padZero(c, numWidth) + await getData(C) + '\n';
+			text += fUtil.padZero(c, xNumWidth) + await getData(C) + '\n';
 			console.log(C);
 		} catch (x) { }
 	}
