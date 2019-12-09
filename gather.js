@@ -1,8 +1,8 @@
-const threads = process.env.GATHER_THREADS;
-const gitDivision = process.env.GIT_DIVISION;
-const xNumWidth = process.env.XML_NUM_WIDTH;
-const fw = process.env.FILE_WIDTH;
-const exec = require('util').promisify(require('child_process').exec);
+const threads = process.env.GATHER_THREADS - 0;
+const gitDivision = process.env.GIT_DIVISION - 0;
+const xNumWidth = process.env.XML_NUM_WIDTH - 0;
+const fw = process.env.FILE_WIDTH - 0;
+const exec = require('child_process').execSync;
 const fs = require('fs');
 const request = require('request');
 const fUtil = require('./fileUtil');
@@ -42,16 +42,18 @@ function processFile(startId, groups, groupLen) {
 			getGranule(startId, groupLen, groupLen * c).then(t => {
 				if (a[c] = t, ++count == groups) {
 					console.log('Writing to file.');
+					fs.writeFileSync(path, a.join(''));
 					exec(`git add ${path}`);
-					res(fs.writeFileSync(path, a.join('')));
+					res();
 				}
 			});
 	});
 }
 
-async function commit(start = 0, end = start) {
-	await exec(`git commit -m "Added files ${start}-${end + fw - 1}."`);
-	await exec('git push');
+function commit(start = 0, end = start) {
+	exec(`git commit -q -m "Added files ${start}-${end + fw - 1}."&&git push -q`,
+		{stdio: 'ignore', maxBuffer: 0});
+	console.log('Commiting, pushing.');
 }
 
 async function gather(start = 0, end = 0) {
@@ -63,15 +65,15 @@ async function gather(start = 0, end = 0) {
 			end -= fw;
 			for (var c = start; c <= end; c += fw) {
 				if (c % gitDivision == 0)
-					commit(c - gitDivision, 0c - fw);
+					commit(c - gitDivision, c - fw);
 				await processFile(c, threads, threadPerCycle);
 			}
 			break;
 		case -1:
 			start -= fw;
 			for (var c = start; c >= end; c -= fw) {
-				if ((c + fw) % gitDivision == 0)
-					commit(c - gitDivision - fw, c);
+				if ((c + fw)  % gitDivision == 0)
+					commit(c + fw, c + gitDivision);
 				await processFile(c, threads, threadPerCycle);
 			}
 			break;
