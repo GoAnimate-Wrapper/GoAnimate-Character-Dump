@@ -2,9 +2,7 @@
 	"name": "grounded",
 	"version": "0.0.1",
 	"scripts": {
-		"gather": "node gatherMain.js",
-		"gather2": "node gatherMain2.js",
-		"start": "node server.js"
+		"start": "node gatherMain.js"
 	},
 	"main": "index.js",
 	"dependencies": {
