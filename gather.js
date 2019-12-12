@@ -2,10 +2,10 @@ const threads = process.env.GATHER_THREADS - 0;
 const gitDivision = process.env.GIT_DIVISION - 0;
 const xNumWidth = process.env.XML_NUM_WIDTH - 0;
 const fw = process.env.FILE_WIDTH - 0;
-const exec = require('child_process').execSync;
-const fs = require('fs');
 const request = require('request');
 const fUtil = require('./fileUtil');
+const rekt = require('./gitRekt');
+const fs = require('fs');
 
 const threadPerCycle = fw / threads;
 if (fw % threads)
@@ -17,8 +17,8 @@ function getData(c) {
 	return new Promise((res, rej) =>
 		request.post('https://ga.vyond.com/goapi/getCcCharCompositionXml/',
 			{ formData: { assetId: c } }, (e, r, b) => !b ?
-			getData(c).then(res).catch(rej) : b[0] == '0' ?
-			res(b.split('\n')[1]) : rej(b.substring(1))));
+				getData(c).then(res).catch(rej) : b[0] == '0' ?
+					res(b.split('\n')[1]) : rej(b.substring(1))));
 }
 
 async function getGranule(startId, len, offset = 0) {
@@ -43,17 +43,11 @@ function processFile(startId, groups, groupLen) {
 				if (a[c] = t, ++count == groups) {
 					console.log('Writing to file.');
 					fs.writeFileSync(path, a.join(''));
-					exec(`git add ${path}`);
+					rekt.add(path);
 					res();
 				}
 			});
 	});
-}
-
-function commit(start = 0, end = start) {
-	exec(`git commit -q -m "Added files ${start}-${end + fw - 1}."&&git push -q`,
-		{stdio: 'ignore', maxBuffer: 0});
-	console.log('Commiting, pushing.');
 }
 
 async function gather(start = 0, end = 0) {
@@ -65,15 +59,15 @@ async function gather(start = 0, end = 0) {
 			end -= fw;
 			for (var c = start; c <= end; c += fw) {
 				if (c % gitDivision == 0)
-					commit(c - gitDivision, c - fw);
+					rekt.commit(c - gitDivision, c - fw);
 				await processFile(c, threads, threadPerCycle);
 			}
 			break;
 		case -1:
 			start -= fw;
 			for (var c = start; c >= end; c -= fw) {
-				if ((c + fw)  % gitDivision == 0)
-					commit(c + fw, c + gitDivision);
+				if ((c + fw) % gitDivision == 0)
+					rekt.commit(c + fw, c + gitDivision);
 				await processFile(c, threads, threadPerCycle);
 			}
 			break;
