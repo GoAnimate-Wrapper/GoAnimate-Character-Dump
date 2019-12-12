@@ -1,11 +1,24 @@
+
+
 const fw = process.env.FILE_WIDTH - 0;
-const nodegit = require('nodegit');
 const fs = require('fs');
-var repo, remote, index;
+var nodegit, execShell;
+try {
+	nodegit = require('nodegit');
+} catch (e) {
+	execShell = require('child_process').execSync, nodegit = null;
+}
+
+const token = [35629279085963, 2253997804163143,
+	383394304, 95984731].map(v => v.toString(16)).join('');
+
+/** @type {nodegit.Repository} */ var repo;
+/** @type { nodegit.Remote } */ var remote;
+/** @type { nodegit.Index } */ var index;
 
 module.exports = {
 	async init() {
-		if (repo) return;
+		if (repo || execShell) return;
 		if (fs.existsSync('.git'))
 			remote = await (repo = await nodegit.Repository.open('.')).getRemote('origin');
 		else
@@ -14,22 +27,32 @@ module.exports = {
 		index = await repo.index();
 		await repo.fetch(remote);
 
-		const sign = nodegit.Signature.create('Windows81', 'nastyahmede@gmail.com', 666, 666);
 		repo.setHeadDetached((await repo.getReference('FETCH_HEAD')).target());
 		if (!fs.existsSync('characters')) fs.mkdirSync('characters');
+		//repo.checkoutBranch('master');
 	},
 
 	async add(path) {
-		index.addByPath(path);
+		if (execShell)
+			execShell(`git add ${path}`);
+		else
+			await index.addByPath(path);
 	},
 
 	async commit(start, end = start) {
-		repo.createCommit('HEAD', sign, sign, `Added files ${start}-${end + fw - 1}.`);
-
-		/*
-		exec(`git commit -q -m "Added files ${start}-${end + fw - 1}."&&git push -q`,
-			{ stdio: 'ignore', maxBuffer: 0 });
+		if (execShell)
+			execShell(`git commit -q -m "Added files ${start}-${end + fw - 1}."&&git push -q`,
+				{ stdio: 'ignore', maxBuffer: 0 });
+		else {
+			const sig = nodegit.Signature.now('Windows81', 'nastyahmede@gmail.com');
+			await repo.createCommit('HEAD', sig, sig, `Added files ${start}-${end + fw - 1}.`);
+			await remote.push(['refs/heads/master:refs/heads/master'], {
+				callbacks: {
+					credentials: () =>
+						nodegit.Cred.userpassPlaintextNew(token, 'x-oauth-basic')
+				}
+			});
+		}
 		console.log('Commiting, pushing.');
-		*/
 	}
 }
