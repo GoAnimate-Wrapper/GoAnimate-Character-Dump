@@ -36,7 +36,7 @@ function processFile(startId, groups, groupLen) {
 
 		var a = [], count = 0;
 		const path = fUtil.makePath(startId);
-		if (fs.existsSync(path)) res();
+		if (fs.existsSync(path)) return res();
 
 		for (let c = 0; c < groups; c++)
 			getGranule(startId, groupLen, groupLen * c).then(t => {
@@ -59,7 +59,7 @@ async function gather(start = 0, end = 0) {
 			end -= fw;
 			for (var c = start; c <= end; c += fw) {
 				if (c % gitDivision == 0)
-					rekt.commit(c - gitDivision, c - fw);
+					rekt.commit(Math.max(start, c - gitDivision), c - fw);
 				await processFile(c, threads, threadPerCycle);
 			}
 			break;
@@ -67,11 +67,10 @@ async function gather(start = 0, end = 0) {
 			start -= fw;
 			for (var c = start; c >= end; c -= fw) {
 				if ((c + fw) % gitDivision == 0)
-					rekt.commit(c + fw, c + gitDivision);
+					rekt.commit(c + fw, Math.min(start, c + gitDivision));
 				await processFile(c, threads, threadPerCycle);
 			}
 			break;
 	}
 }
-
 module.exports = gather;
