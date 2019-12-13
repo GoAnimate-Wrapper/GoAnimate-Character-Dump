@@ -36,9 +36,9 @@ function processFile(startId, groups, groupLen) {
 
 		var a = [], count = 0;
 		const path = fUtil.makePath(startId);
-		if (fs.existsSync(path)) return res();
+		if (fs.existsSync(path)) res();
 
-		for (let c = 0; c < groups; c++)
+		else for (let c = 0; c < groups; c++)
 			getGranule(startId, groupLen, groupLen * c).then(t => {
 				if (a[c] = t, ++count == groups) {
 					console.log('Writing to file.');
@@ -58,7 +58,7 @@ async function gather(start = 0, end = 0) {
 		case 1:
 			end -= fw;
 			for (var c = start; c <= end; c += fw) {
-				if (c % gitDivision == 0)
+				if (c % gitDivision == 0 && c > start)
 					rekt.commit(Math.max(start, c - gitDivision), c - fw);
 				await processFile(c, threads, threadPerCycle);
 			}
@@ -66,7 +66,7 @@ async function gather(start = 0, end = 0) {
 		case -1:
 			start -= fw;
 			for (var c = start; c >= end; c -= fw) {
-				if ((c + fw) % gitDivision == 0)
+				if ((c + fw) % gitDivision == 0 && c < start)
 					rekt.commit(c + fw, Math.min(start, c + gitDivision));
 				await processFile(c, threads, threadPerCycle);
 			}

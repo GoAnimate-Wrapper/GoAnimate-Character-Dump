@@ -45,7 +45,7 @@ module.exports = {
 		start -= start % fw, end -= end % fw;
 		if (execShell) {
 			console.log('Commiting, pushing.');
-			execShell(`git commit -q -m "Added files ${start}-${end + fw - 1}."&&git push -f`,
+			execShell(`git fetch&&git reset FETCH_HEAD --soft &&git commit -q -m "Added files ${start}-${end + fw - 1}."&&git push -f`,
 				{ stdio: 'ignore', maxBuffer: 0 });
 		}
 		else {

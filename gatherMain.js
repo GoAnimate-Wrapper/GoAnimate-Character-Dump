@@ -4,23 +4,23 @@ const gather = require('./gather');
 const rekt = require('./gitRekt');
 
 const args = process.argv.slice(2).reverse();
-const gt1 = process.env.GATHER_THRESH1;
-const gt2 = process.env.GATHER_THRESH2;
+const startEnv = process.env.START_OVERRIDE || process.env.START;
+const endEnv = process.env.END_OVERRIDE || process.env.END;
 
 console.log('Starting script.');
 rekt.init().then(() => {
 	var charList = fs.readdirSync('characters').sort();
-	var start = args[1] || gt1, end = args[0] || gt2;
+	var start = args[1] || startEnv, end = args[0] || endEnv;
 
 	if (charList.length) {
 		switch (args[args.length - 1]) {
 			case 'up':
-				start = charList[0].substring(0, 9);
-				end = gt1;
+				start = charList[charList.length - 1].substring(0, 9);
+				end = endEnv;
 				break;
 			case 'down':
-				start = charList[charList.length - 1].substring(0, 9);
-				end = gt2;
+				start = charList[0].substring(0, 9);
+				end = startEnv;
 				break;
 		}
 	}
