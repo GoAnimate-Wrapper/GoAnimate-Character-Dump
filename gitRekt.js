@@ -17,7 +17,7 @@ module.exports = {
 	async fetch() {
 		if (execShell) return;
 		await repo.fetch(remote);
-		repo.setHead((await repo.getReference('FETCH_HEAD')).target().tostrS());
+		repo.setHeadDetached((await repo.getReference('FETCH_HEAD')).target());
 	},
 
 	async init() {
