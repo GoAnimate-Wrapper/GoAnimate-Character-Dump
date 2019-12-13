@@ -17,7 +17,8 @@ module.exports = {
 	async fetch() {
 		if (execShell) return;
 		await repo.fetch(remote);
-		repo.setHeadDetached((await repo.getReference('FETCH_HEAD')).target());
+		const c = await repo.getReferenceCommit('FETCH_HEAD');
+		await nodegit.Reset.reset(repo, c, 1);
 	},
 
 	async init() {
@@ -49,20 +50,24 @@ module.exports = {
 				{ stdio: 'ignore', maxBuffer: 0 });
 		}
 		else {
-			const sig = nodegit.Signature.now('Windows81', 'nastyahmede@gmail.com');
-			const msg = `Added files ${start}-${end + fw - 1}.`; this.fetch();
-			const head = await nodegit.Reference.nameToId(repo, 'HEAD');
-			await repo.createCommit('HEAD', sig, sig, msg,
-				await index.writeTree(), [await repo.getCommit(head)]);
+			{
+				const sig = nodegit.Signature.now('Windows81', 'nastyahmede@gmail.com');
+				const msg = `Added files ${start}-${end + fw - 1}.`; this.fetch();
+				const head = await nodegit.Reference.nameToId(repo, 'HEAD');
+				await repo.createCommit('HEAD', sig, sig, msg,
+					await index.writeTree(), [await repo.getCommit(head)]);
+				console.log('Commited.');
+			}
 
-			console.log('Commited.');
-			await remote.push(['refs/heads/master:refs/heads/master'], {
-				callbacks: {
-					credentials: () =>
-						nodegit.Cred.userpassPlaintextNew(token, 'x-oauth-basic')
-				}
-			});
-			console.log('Pushed.');
+			{
+				await remote.push(['refs/heads/master:refs/heads/master'], {
+					callbacks: {
+						credentials: () =>
+							nodegit.Cred.userpassPlaintextNew(token, 'x-oauth-basic')
+					}
+				});
+				console.log('Pushed.');
+			}
 		}
 	}
 }

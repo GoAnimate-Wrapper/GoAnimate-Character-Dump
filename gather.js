@@ -62,6 +62,7 @@ async function gather(start = 0, end = 0) {
 					rekt.commit(Math.max(start, c - gitDivision), c - fw);
 				await processFile(c, threads, threadPerCycle);
 			}
+			rekt.commit(end - end % gitDivision, end);
 			break;
 		case -1:
 			start -= fw;
@@ -70,6 +71,7 @@ async function gather(start = 0, end = 0) {
 					rekt.commit(c + fw, Math.min(start, c + gitDivision));
 				await processFile(c, threads, threadPerCycle);
 			}
+			rekt.commit(end, end - end % gitDivision + gitDivision - fw);
 			break;
 	}
 }
