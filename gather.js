@@ -73,6 +73,8 @@ async function gather(start = 0, end = 0) {
 			}
 			rekt.commit(end, end - end % gitDivision + gitDivision - fw);
 			break;
+		case 0:
+			await processFile(start, threads, threadPerCycle);
 	}
 }
 module.exports = gather;
