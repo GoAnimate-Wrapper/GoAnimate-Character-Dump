@@ -36,7 +36,7 @@ function processFile(startId, groups, groupLen) {
 
 		var a = [], count = 0;
 		const path = fUtil.makePath(startId);
-		if (fs.existsSync(path)) res();
+		if (fs.existsSync(path)) res(rekt.add(path));
 
 		else for (let c = 0; c < groups; c++)
 			getGranule(startId, groupLen, groupLen * c).then(t => {
@@ -50,7 +50,7 @@ function processFile(startId, groups, groupLen) {
 	});
 }
 
-async function gather(start = 0, end = 0) {
+async function gather(start = 0, end = start) {
 	if (start < 0 || end < 0) return;
 	start -= start % fw, end -= end % fw;
 	const len = end - start, sign = Math.sign(len);

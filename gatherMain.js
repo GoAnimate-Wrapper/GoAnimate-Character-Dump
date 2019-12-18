@@ -25,15 +25,12 @@ rekt.init().then(() => {
 			end = startEnv;
 			break;
 		case 'range':
-			start = charList[0].substring(0, 9);
-			end = startEnv;
 			break;
 		default:
 			if (!args.length) break;
-			args.map(v => Number.parseInt(v)).
-				filter(v => !isNaN(v)).
-				forEach(v => gather(v, v));
-			return;
+			const t = args.map(v => Number.parseInt(v)).filter(v => !isNaN(v));
+			var c = 0, f = function () { if (c < t.length) gather(t[c++]).then(f); }
+			return f();
 	}
 	gather(Number.parseInt(start), Number.parseInt(end));
 });

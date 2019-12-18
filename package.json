@@ -7,7 +7,6 @@
 	"main": "index.js",
 	"dependencies": {
 		"dotenv": "^8.2.0",
-		"request": "^2.88.0",
-		"nodegit": "*"
+		"request": "^2.88.0"
 	}
 }
